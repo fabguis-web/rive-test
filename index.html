@@ -29,18 +29,34 @@
   <canvas id="rive-canvas"></canvas>
 
   <script>
-    const r = new rive.Rive({
-      src: "round.riv",
-      canvas: document.getElementById("rive-canvas"),
-      stateMachines: "State Machine 1",
-      autoplay: true,
-      layout: new rive.Layout({
-        fit: rive.Fit.Contain,
-        alignment: rive.Alignment.Center
-      }),
-      onLoad: () => {
-        r.resizeDrawingSurfaceToCanvas();
-      },
+    let r;
+    
+    function initRive() {
+      r = new rive.Rive({
+        src: "round.riv",
+        canvas: document.getElementById("rive-canvas"),
+        stateMachines: "State Machine 1",
+        autoplay: true,
+        layout: new rive.Layout({
+          fit: rive.Fit.Contain,
+          alignment: rive.Alignment.Center
+        }),
+        onLoad: () => {
+          r.resizeDrawingSurfaceToCanvas();
+        },
+      });
+    }
+
+    // Trigger on load to handle cached iframe initializations
+    if (document.readyState === 'complete') {
+      initRive();
+    } else {
+      window.addEventListener('load', initRive);
+    }
+
+    // Recalculate canvas surface if container dimensions update dynamically
+    window.addEventListener('resize', () => {
+      if (r) r.resizeDrawingSurfaceToCanvas();
     });
   </script>
 

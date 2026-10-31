@@ -34,7 +34,7 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
-    function updateSurface() {
+    function fitCanvasToParent() {
       const rect = canvas.getBoundingClientRect();
       const w = Math.round(rect.width) || 300;
       const h = Math.round(rect.height) || 300;
@@ -42,32 +42,33 @@
       canvas.height = h;
     }
 
-    // Measure bounding box BEFORE Rive initializes
-    updateSurface();
+    // Set canvas pixel buffer before initializing Rive
+    fitCanvasToParent();
 
     const r = new rive.Rive({
       src: "round.riv",
       canvas: canvas,
       stateMachines: "State Machine 1",
       autoplay: true,
+      // Prevents Rive from auto-hooking window resize & full-viewport surface expansion
+      automaticallyHandleEvents: false,
       layout: new rive.Layout({
         fit: rive.Fit.Contain,
         alignment: rive.Alignment.Center
       }),
       onLoad: () => {
-        updateSurface();
-        // Do NOT call r.resizeDrawingSurfaceToCanvas() here!
-        // It overrides canvas.width/height with window inner dimensions.
+        fitCanvasToParent();
       }
     });
 
-    const observer = new ResizeObserver(() => {
-      updateSurface();
+    // Directly control the canvas buffer when Salesforce resizes the container
+    const resizeObserver = new ResizeObserver(() => {
+      fitCanvasToParent();
       if (r) {
         r.startRendering();
       }
     });
-    observer.observe(document.body);
+    resizeObserver.observe(document.body);
   </script>
 
 </body>

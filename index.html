@@ -21,7 +21,9 @@
 
     #rive-canvas {
       display: block;
-      object-fit: contain;
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -39,8 +41,6 @@
 
     canvas.width = targetW;
     canvas.height = targetH;
-    canvas.style.width = targetW + "px";
-    canvas.style.height = targetH + "px";
 
     const r = new rive.Rive({
       src: "round.riv",
@@ -49,7 +49,7 @@
       autoplay: true,
       automaticallyHandleEvents: false,
       layout: new rive.Layout({
-        fit: rive.Fit.Contain,
+        fit: rive.Fit.Cover, // Zooms past transparent artboard padding to fill frame bounds
         alignment: rive.Alignment.Center
       })
     });

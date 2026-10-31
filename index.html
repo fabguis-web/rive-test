@@ -35,14 +35,24 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
-    function syncCanvasSize() {
-      const w = window.innerWidth || 150;
-      const h = window.innerHeight || 150;
+    function getTargetDimensions() {
+      const params = new URLSearchParams(window.location.search);
+      // Read explicit w/h parameters passed from Salesforce, or fall back to frame size
+      const paramW = parseInt(params.get("w"), 10);
+      const paramH = parseInt(params.get("h"), 10);
+
+      const w = paramW || window.innerWidth || 150;
+      const h = paramH || window.innerHeight || 150;
+      return { w, h };
+    }
+
+    function applySurfaceSize() {
+      const { w, h } = getTargetDimensions();
       canvas.width = w;
       canvas.height = h;
     }
 
-    syncCanvasSize();
+    applySurfaceSize();
 
     const r = new rive.Rive({
       src: "round.riv",
@@ -51,16 +61,16 @@
       autoplay: true,
       automaticallyHandleEvents: false,
       layout: new rive.Layout({
-        fit: rive.Fit.Contain, // Fits the artwork within exact frame bounds without blowout
+        fit: rive.Fit.Contain,
         alignment: rive.Alignment.Center
       }),
       onLoad: () => {
-        syncCanvasSize();
+        applySurfaceSize();
       }
     });
 
     window.addEventListener("resize", () => {
-      syncCanvasSize();
+      applySurfaceSize();
       if (r) {
         r.startRendering();
       }

@@ -6,10 +6,10 @@
   <style>
     * {
       box-sizing: border-box;
-    }
-    html, body {
       margin: 0;
       padding: 0;
+    }
+    html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
@@ -19,14 +19,10 @@
       align-items: center;
     }
 
-    /* Force the canvas element bounds to strictly follow body size */
     #rive-canvas {
       width: 100% !important;
       height: 100% !important;
-      max-width: 100% !important;
-      max-height: 100% !important;
       display: block;
-      object-fit: contain;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -38,6 +34,17 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
+    function updateSurface() {
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.round(rect.width) || 300;
+      const h = Math.round(rect.height) || 300;
+      canvas.width = w;
+      canvas.height = h;
+    }
+
+    // Measure bounding box BEFORE Rive initializes
+    updateSurface();
+
     const r = new rive.Rive({
       src: "round.riv",
       canvas: canvas,
@@ -48,19 +55,19 @@
         alignment: rive.Alignment.Center
       }),
       onLoad: () => {
-        // Sync internal drawing surface strictly to element client dimensions
-        canvas.width = canvas.clientWidth || 300;
-        canvas.height = canvas.clientHeight || 300;
-        r.resizeDrawingSurfaceToCanvas();
+        updateSurface();
+        // Do NOT call r.resizeDrawingSurfaceToCanvas() here!
+        // It overrides canvas.width/height with window inner dimensions.
       }
     });
 
-    // Handle dynamic scaling when Salesforce size changes
-    window.addEventListener("resize", () => {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
-      if (r) r.resizeDrawingSurfaceToCanvas();
+    const observer = new ResizeObserver(() => {
+      updateSurface();
+      if (r) {
+        r.startRendering();
+      }
     });
+    observer.observe(document.body);
   </script>
 
 </body>

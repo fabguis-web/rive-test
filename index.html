@@ -1,20 +1,48 @@
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: transparent;
-    overflow: hidden;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Rive Embed</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: transparent;
+      overflow: hidden;
+    }
 
-  /* Fills 100% of the iframe container provided by Salesforce */
-  #rive-canvas {
-    width: 100% !important;
-    height: 100% !important;
-    display: block;
-  }
-</style>
+    #rive-canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+  </style>
+  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+</head>
+<body>
+
+  <canvas id="rive-canvas"></canvas>
+
+  <script>
+    const r = new rive.Rive({
+      src: "round.riv",
+      canvas: document.getElementById("rive-canvas"),
+      stateMachines: "State Machine 1",
+      autoplay: true,
+      layout: new rive.Layout({
+        fit: rive.Fit.Contain,
+        alignment: rive.Alignment.Center
+      }),
+      onLoad: () => {
+        r.resizeDrawingSurfaceToCanvas();
+      },
+    });
+  </script>
+
+</body>
+</html>

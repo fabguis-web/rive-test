@@ -12,6 +12,8 @@
     html, body {
       width: 100%;
       height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
       overflow: hidden;
       background: transparent;
       display: flex;
@@ -22,7 +24,10 @@
     #rive-canvas {
       width: 100% !important;
       height: 100% !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
       display: block;
+      object-fit: contain;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -35,14 +40,15 @@
     const canvas = document.getElementById("rive-canvas");
 
     function fitCanvasToParent() {
-      const rect = canvas.getBoundingClientRect();
+      // Measure the exact parent container size rather than the window
+      const parent = canvas.parentElement || document.body;
+      const rect = parent.getBoundingClientRect();
       const w = Math.round(rect.width) || 300;
       const h = Math.round(rect.height) || 300;
       canvas.width = w;
       canvas.height = h;
     }
 
-    // Set canvas pixel buffer before initializing Rive
     fitCanvasToParent();
 
     const r = new rive.Rive({
@@ -50,7 +56,6 @@
       canvas: canvas,
       stateMachines: "State Machine 1",
       autoplay: true,
-      // Prevents Rive from auto-hooking window resize & full-viewport surface expansion
       automaticallyHandleEvents: false,
       layout: new rive.Layout({
         fit: rive.Fit.Contain,
@@ -61,7 +66,6 @@
       }
     });
 
-    // Directly control the canvas buffer when Salesforce resizes the container
     const resizeObserver = new ResizeObserver(() => {
       fitCanvasToParent();
       if (r) {

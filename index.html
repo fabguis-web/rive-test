@@ -16,7 +16,8 @@
       width: 100%;
       height: 100%;
       display: block;
-      visibility: hidden;
+      /* Hard-hide canvas until JS explicitly reveals it */
+      display: none;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -30,10 +31,11 @@
     const r = new rive.Rive({
       src: rivUrl,
       canvas: canvasElement,
-      autoplay: true,
+      autoplay: false, /* Disabled to stop initial pre-render */
       onLoad: () => {
         r.resizeDrawingSurfaceToCanvas();
         
+        // Play timeline animation directly
         const anims = r.animationNames;
         if (anims && anims.length > 0) {
           r.play(anims[0]);
@@ -41,7 +43,8 @@
           r.play();
         }
         
-        canvasElement.style.visibility = "visible";
+        // Reveal canvas ONLY when actively playing
+        canvasElement.style.display = "block";
       },
       onLoadError: (err) => {
         console.error("Rive Asset Load Failure:", err);

@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <title>Rive Embed</title>
   <style>
-    /* Force body and canvas to expand to full screen boundaries */
     html, body {
       margin: 0;
       padding: 0;
@@ -24,8 +23,11 @@
 <body>
   <canvas id="rive-canvas"></canvas>
   <script>
+    /* Use an absolute URL path to prevent local root fetch failures */
+    const rivUrl = window.location.origin + window.location.pathname.replace(/\/$/, "") + "/round.riv";
+
     const r = new rive.Rive({
-      src: "round.riv",
+      src: rivUrl,
       canvas: document.getElementById("rive-canvas"),
       autoplay: true,
       stateMachines: "State Machine 1",
@@ -35,10 +37,12 @@
       }),
       onLoad: () => {
         r.resizeDrawingSurfaceToCanvas();
+      },
+      onLoadError: (err) => {
+        console.error("Rive failed to load asset:", err);
       }
     });
 
-    /* Recalculate drawing surface if the window resizes */
     window.addEventListener("resize", () => {
       r.resizeDrawingSurfaceToCanvas();
     });

@@ -33,26 +33,10 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
-    function getValidDimension(paramValue, fallbackWindowVal) {
-      const parsed = parseInt(paramValue, 10);
-      // Ensure the parsed value is a real positive number
-      if (!isNaN(parsed) && parsed > 0) {
-        return parsed;
-      }
-      // Otherwise fall back to frame window size or a 150px default
-      if (fallbackWindowVal && fallbackWindowVal > 0) {
-        return fallbackWindowVal;
-      }
-      return 150;
-    }
-
     const params = new URLSearchParams(window.location.search);
-    
-    // Safely parse parameters with fail-safes
-    const targetW = getValidDimension(params.get("w"), window.innerWidth);
-    const targetH = getValidDimension(params.get("h"), window.innerHeight);
+    const targetW = parseInt(params.get("w"), 10) || 150;
+    const targetH = parseInt(params.get("h"), 10) || 150;
 
-    // Apply dimensions to both buffer and inline styles
     canvas.width = targetW;
     canvas.height = targetH;
     canvas.style.width = targetW + "px";

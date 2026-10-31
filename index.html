@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Rive Embed</title>
@@ -16,6 +16,9 @@
       width: 100%;
       height: 100%;
       display: block;
+      /* Hide canvas during WASM compile to prevent the Rive logo flash */
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -23,8 +26,7 @@
 <body>
   <canvas id="rive-canvas"></canvas>
   <script>
-    /* Use an absolute URL path to prevent local root fetch failures */
-    const rivUrl = window.location.origin + window.location.pathname.replace(/\/$/, "") + "/round.riv";
+    const rivUrl = new URL("round.riv", window.location.href).href;
 
     const r = new rive.Rive({
       src: rivUrl,
@@ -37,9 +39,11 @@
       }),
       onLoad: () => {
         r.resizeDrawingSurfaceToCanvas();
+        // Reveal canvas only after asset is compiled and ready
+        document.getElementById("rive-canvas").style.opacity = "1";
       },
       onLoadError: (err) => {
-        console.error("Rive failed to load asset:", err);
+        console.error("Rive Asset Load Failure:", err);
       }
     });
 

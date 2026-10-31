@@ -23,6 +23,7 @@
       width: 100% !important;
       height: 100% !important;
       display: block;
+      object-fit: contain;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -35,8 +36,8 @@
     const canvas = document.getElementById("rive-canvas");
 
     function syncCanvasSize() {
-      const w = window.innerWidth || 300;
-      const h = window.innerHeight || 300;
+      const w = window.innerWidth || 150;
+      const h = window.innerHeight || 150;
       canvas.width = w;
       canvas.height = h;
     }
@@ -50,7 +51,7 @@
       autoplay: true,
       automaticallyHandleEvents: false,
       layout: new rive.Layout({
-        fit: rive.Fit.Cover, // Zooms past excess transparent artboard space to fill the frame
+        fit: rive.Fit.Contain, // Fits the artwork within exact frame bounds without blowout
         alignment: rive.Alignment.Center
       }),
       onLoad: () => {

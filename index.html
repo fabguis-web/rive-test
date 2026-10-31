@@ -33,18 +33,31 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
-    // 1. Parse explicit width/height passed from Salesforce URL
-    const params = new URLSearchParams(window.location.search);
-    const targetW = parseInt(params.get("w"), 10) || 150;
-    const targetH = parseInt(params.get("h"), 10) || 150;
+    function getValidDimension(paramValue, fallbackWindowVal) {
+      const parsed = parseInt(paramValue, 10);
+      // Ensure the parsed value is a real positive number
+      if (!isNaN(parsed) && parsed > 0) {
+        return parsed;
+      }
+      // Otherwise fall back to frame window size or a 150px default
+      if (fallbackWindowVal && fallbackWindowVal > 0) {
+        return fallbackWindowVal;
+      }
+      return 150;
+    }
 
-    // 2. Hard-lock canvas attributes AND inline CSS to match target dimensions
+    const params = new URLSearchParams(window.location.search);
+    
+    // Safely parse parameters with fail-safes
+    const targetW = getValidDimension(params.get("w"), window.innerWidth);
+    const targetH = getValidDimension(params.get("h"), window.innerHeight);
+
+    // Apply dimensions to both buffer and inline styles
     canvas.width = targetW;
     canvas.height = targetH;
     canvas.style.width = targetW + "px";
     canvas.style.height = targetH + "px";
 
-    // 3. Initialize Rive on the pre-sized canvas
     const r = new rive.Rive({
       src: "round.riv",
       canvas: canvas,

@@ -20,8 +20,6 @@
     }
 
     #rive-canvas {
-      width: 100% !important;
-      height: 100% !important;
       display: block;
       object-fit: contain;
     }
@@ -35,25 +33,18 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
-    function getTargetDimensions() {
-      const params = new URLSearchParams(window.location.search);
-      // Read explicit w/h parameters passed from Salesforce, or fall back to frame size
-      const paramW = parseInt(params.get("w"), 10);
-      const paramH = parseInt(params.get("h"), 10);
+    // 1. Parse explicit width/height passed from Salesforce URL
+    const params = new URLSearchParams(window.location.search);
+    const targetW = parseInt(params.get("w"), 10) || 150;
+    const targetH = parseInt(params.get("h"), 10) || 150;
 
-      const w = paramW || window.innerWidth || 150;
-      const h = paramH || window.innerHeight || 150;
-      return { w, h };
-    }
+    // 2. Hard-lock canvas attributes AND inline CSS to match target dimensions
+    canvas.width = targetW;
+    canvas.height = targetH;
+    canvas.style.width = targetW + "px";
+    canvas.style.height = targetH + "px";
 
-    function applySurfaceSize() {
-      const { w, h } = getTargetDimensions();
-      canvas.width = w;
-      canvas.height = h;
-    }
-
-    applySurfaceSize();
-
+    // 3. Initialize Rive on the pre-sized canvas
     const r = new rive.Rive({
       src: "round.riv",
       canvas: canvas,
@@ -63,17 +54,7 @@
       layout: new rive.Layout({
         fit: rive.Fit.Contain,
         alignment: rive.Alignment.Center
-      }),
-      onLoad: () => {
-        applySurfaceSize();
-      }
-    });
-
-    window.addEventListener("resize", () => {
-      applySurfaceSize();
-      if (r) {
-        r.startRendering();
-      }
+      })
     });
   </script>
 

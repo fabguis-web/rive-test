@@ -20,10 +20,10 @@
     }
 
     #rive-canvas {
-      display: block;
       width: 100% !important;
       height: 100% !important;
-      object-fit: cover;
+      display: block;
+      object-fit: contain;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -35,23 +35,48 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
-    const params = new URLSearchParams(window.location.search);
-    const targetW = parseInt(params.get("w"), 10) || 150;
-    const targetH = parseInt(params.get("h"), 10) || 150;
+    function getTargetDimensions() {
+      const params = new URLSearchParams(window.location.search);
+      const paramW = parseInt(params.get("w"), 10);
+      const paramH = parseInt(params.get("h"), 10);
 
-    canvas.width = targetW;
-    canvas.height = targetH;
+      // If w/h passed from Salesforce, use them; otherwise use full inner window
+      const w = (!isNaN(paramW) && paramW > 0) ? paramW : window.innerWidth;
+      const h = (!isNaN(paramH) && paramH > 0) ? paramH : window.innerHeight;
+      return { w, h };
+    }
+
+    function syncCanvasResolution() {
+      const { w, h } = getTargetDimensions();
+      const dpr = window.devicePixelRatio || 1;
+      
+      // Match the physical pixel buffer to display resolution (prevents pixelation)
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+    }
+
+    syncCanvasResolution();
 
     const r = new rive.Rive({
-      src: "round.riv",
+      src: "https://fabguis-web.github.io/rive-test/round.riv",
       canvas: canvas,
       stateMachines: "State Machine 1",
       autoplay: true,
       automaticallyHandleEvents: false,
       layout: new rive.Layout({
-        fit: rive.Fit.Cover, // Zooms past transparent artboard padding to fill frame bounds
+        fit: rive.Fit.Contain, // Keeps artwork crisp within bounds
         alignment: rive.Alignment.Center
-      })
+      }),
+      onLoad: () => {
+        syncCanvasResolution();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      syncCanvasResolution();
+      if (r) {
+        r.startRendering();
+      }
     });
   </script>
 

@@ -16,9 +16,7 @@
       width: 100%;
       height: 100%;
       display: block;
-      /* Hide canvas during WASM compile to prevent the Rive logo flash */
-      opacity: 0;
-      transition: opacity 0.2s ease-in-out;
+      visibility: hidden;
     }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
@@ -27,20 +25,25 @@
   <canvas id="rive-canvas"></canvas>
   <script>
     const rivUrl = new URL("round.riv", window.location.href).href;
+    const canvasElement = document.getElementById("rive-canvas");
 
     const r = new rive.Rive({
       src: rivUrl,
-      canvas: document.getElementById("rive-canvas"),
+      canvas: canvasElement,
       autoplay: true,
-      stateMachines: "State Machine 1",
-      layout: new rive.Layout({
-        fit: rive.Fit.Contain,
-        alignment: rive.Alignment.Center
-      }),
+      /* Automatically play the main timeline animation directly */
       onLoad: () => {
         r.resizeDrawingSurfaceToCanvas();
-        // Reveal canvas only after asset is compiled and ready
-        document.getElementById("rive-canvas").style.opacity = "1";
+        
+        /* If your animation timeline has a specific name in Rive, pass it inside r.play() */
+        const anims = r.animationNames;
+        if (anims && anims.length > 0) {
+          r.play(anims[0]);
+        } else {
+          r.play();
+        }
+        
+        canvasElement.style.visibility = "visible";
       },
       onLoadError: (err) => {
         console.error("Rive Asset Load Failure:", err);

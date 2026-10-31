@@ -16,7 +16,7 @@
       width: 100%;
       height: 100%;
       display: block;
-      /* Hard-hide canvas until JS explicitly reveals it */
+      /* Keep hidden during compilation */
       display: none;
     }
   </style>
@@ -31,19 +31,20 @@
     const r = new rive.Rive({
       src: rivUrl,
       canvas: canvasElement,
-      autoplay: false, /* Disabled to stop initial pre-render */
+      autoplay: false,
+      /* Explicitly lock to State Machine 1 so it ignores 'colors' */
+      stateMachines: "State Machine 1",
+      layout: new rive.Layout({
+        fit: rive.Fit.Contain,
+        alignment: rive.Alignment.Center
+      }),
       onLoad: () => {
         r.resizeDrawingSurfaceToCanvas();
         
-        // Play timeline animation directly
-        const anims = r.animationNames;
-        if (anims && anims.length > 0) {
-          r.play(anims[0]);
-        } else {
-          r.play();
-        }
+        // Start State Machine 1 directly
+        r.play("State Machine 1");
         
-        // Reveal canvas ONLY when actively playing
+        // Reveal canvas only after active playback begins
         canvasElement.style.display = "block";
       },
       onLoadError: (err) => {

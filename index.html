@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rive Embed</title>
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+    canvas { width: 100%; height: 100%; display: block; }
+  </style>
+  <script src="https://unpkg.com/@rive-app/canvas@2.9.1"></script>
+</head>
+<body>
+  <canvas id="rive-canvas"></canvas>
+  <script>
+    /* Initialize the Rive runtime instance */
+    const r = new rive.Rive({
+      src: "round.riv", /* Must match your .riv filename exactly */
+      canvas: document.getElementById("rive-canvas"),
+      autoplay: true,
+      stateMachines: "State Machine 1", /* Match your state machine name from Rive */
+      onLoad: () => {
+        r.resizeDrawingSurfaceToCanvas();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -4,23 +4,43 @@
   <meta charset="utf-8">
   <title>Rive Embed</title>
   <style>
-    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
-    canvas { width: 100%; height: 100%; display: block; }
+    /* Force body and canvas to expand to full screen boundaries */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: transparent;
+    }
+    #rive-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   </style>
   <script src="https://unpkg.com/@rive-app/canvas@2.9.1"></script>
 </head>
 <body>
   <canvas id="rive-canvas"></canvas>
   <script>
-    /* Initialize the Rive runtime instance */
     const r = new rive.Rive({
-      src: "round.riv", /* Must match your .riv filename exactly */
+      src: "round.riv",
       canvas: document.getElementById("rive-canvas"),
       autoplay: true,
-      stateMachines: "State Machine 1", /* Match your state machine name from Rive */
+      stateMachines: "State Machine 1",
+      layout: new rive.Layout({
+        fit: rive.Fit.Contain,
+        alignment: rive.Alignment.Center
+      }),
       onLoad: () => {
         r.resizeDrawingSurfaceToCanvas();
       }
+    });
+
+    /* Recalculate drawing surface if the window resizes */
+    window.addEventListener("resize", () => {
+      r.resizeDrawingSurfaceToCanvas();
     });
   </script>
 </body>

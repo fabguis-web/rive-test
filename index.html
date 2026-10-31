@@ -31,11 +31,9 @@
       src: rivUrl,
       canvas: canvasElement,
       autoplay: true,
-      /* Automatically play the main timeline animation directly */
       onLoad: () => {
         r.resizeDrawingSurfaceToCanvas();
         
-        /* If your animation timeline has a specific name in Rive, pass it inside r.play() */
         const anims = r.animationNames;
         if (anims && anims.length > 0) {
           r.play(anims[0]);

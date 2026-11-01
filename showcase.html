@@ -11,9 +11,8 @@
   body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #222; padding: 24px; box-sizing: border-box; }
   .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
   .card { border: 1px solid rgba(0,0,0,.1); border-radius: 12px; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
-  .card.featured { grid-column: span 2; }
+  .card.featured { grid-column: 1 / -1; }
   .stage { position: relative; width: 100%; aspect-ratio: 1 / 1; }
-  .featured .stage { aspect-ratio: 16 / 9; }
   .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .caption { padding: 12px 16px; font-size: 14px; line-height: 1.4; border-top: 1px solid rgba(0,0,0,.08); }
   .caption strong { display: block; font-size: 15px; margin-bottom: 2px; }
@@ -34,15 +33,22 @@
 <script src="https://unpkg.com/@rive-app/webgl2@2.49.0"></script>
 <script>
 (function () {
+  // Layout rhythm: 2-up square rows alternate with full-width landscape rows.
+  // ratio = artboard width / height (read from the runtime's bounds) so nothing letterboxes.
   var ITEMS = [
     { src: "carousel.riv",    artboard: "Banking-app carousel", sm: "State Machine",   title: "Banking-app carousel", text: "Interactive card carousel for a banking app." },
-    { src: "aluminium.riv",   artboard: "Artboard",             sm: "State Machine 1", title: "Aluminium",      text: "Graphical fidelity: realistic brushed-metal button, rendered live." },
-    { src: "cta-button.riv",  artboard: "CTA-button",           sm: "State Machine 1", title: "CTA button",     text: "Call-to-action with hover and click states." },
-    { src: "button-nowak.riv",artboard: "Artboard",             sm: "State Machine 1", title: "Button Nowak",   text: "Button with hover and click feedback." },
-    { src: "terms.riv",       artboard: "Artboard",             sm: "State Machine 1", title: "Terms",          text: "Terms form: checkbox, field and submit interactions." },
-    { src: "cube.riv",        artboard: "Power-up",             sm: "State Machine 1", title: "Power-up cube",  text: "Looping power-up animation." },
-    { src: "hatch-door.riv",  artboard: "Artboard",             sm: "State Machine 1", title: "Hatch door",     text: "Flip the switch to open and close the hatch." },
-    { src: "float.riv",       artboard: "Artboard",             sm: "State Machine 1", title: "Float",          text: "Floating interactive motion." }
+    { src: "aluminium.riv",   artboard: "Artboard", sm: "State Machine 1", title: "Aluminium", text: "Graphical fidelity: realistic brushed-metal button, rendered live." },
+    { src: "sonar.riv",       artboard: "Main",     sm: "State Machine 1", title: "Sonar", text: "Continuous sonar sweep, rendered in real time.", featured: true, ratio: 1000 / 525 },
+    { src: "portals.riv",     artboard: "Artboard",  sm: "State Machine 1", title: "Portals", text: "Depth and layering: scenes opening into scenes." },
+    { src: "button-nowak.riv",artboard: "Artboard", sm: "State Machine 1", title: "Button Nowak", text: "Button with hover and click feedback." },
+    { src: "hatch-door.riv",  artboard: "Artboard", sm: "State Machine 1", title: "Hatch door", text: "Flip the switch to open and close the hatch.", featured: true, ratio: 778 / 472 },
+    { src: "terms.riv",       artboard: "Artboard", sm: "State Machine 1", title: "Terms", text: "Terms form: checkbox, field and submit interactions." },
+    { src: "cube.riv",        artboard: "Power-up", sm: "State Machine 1", title: "Power-up cube", text: "Looping power-up animation." },
+    { src: "connect.riv",     artboard: "Base",     sm: "State Machine 1", title: "Connect", text: "Hover the centre to connect the pieces.", featured: true, ratio: 1200 / 500 },
+    { src: "float.riv",       artboard: "Artboard", sm: "State Machine 1", title: "Float", text: "Floating interactive motion." },
+    { src: "clickable-anywhere.riv", artboard: "Artboard", sm: "State Machine 1", title: "Clickable anywhere", text: "Follows your pointer; click anywhere in the tile." },
+    { src: "bookmark.riv",    artboard: "Artboard", sm: "State Machine 1", title: "Bookmark", text: "Micro-interaction: hover and click to save." },
+    { src: "breathcontrol.riv", artboard: "Color",  sm: "State Machine 1", title: "Breath control", text: "Calm, looping breathing guide." }
   ];
 
   var grid = document.getElementById("grid");
@@ -52,7 +58,7 @@
   ITEMS.forEach(function (item) {
     var card = document.createElement("article");
     card.className = "card" + (item.featured ? " featured" : "");
-    card.innerHTML = '<div class="stage"><canvas aria-label="' + item.title + '"></canvas></div>' +
+    card.innerHTML = '<div class="stage"' + (item.ratio ? ' style="aspect-ratio:' + item.ratio + '"' : '') + '><canvas aria-label="' + item.title + '"></canvas></div>' +
       '<div class="caption"><strong>' + item.title + '</strong>' + item.text + '</div>';
     grid.appendChild(card);
     entries.push({ item: item, canvas: card.querySelector("canvas"), rive: null, visible: false });

@@ -26,7 +26,7 @@
       object-fit: contain;
     }
   </style>
-  <script src="https://unpkg.com/@rive-app/canvas@latest"></script>
+  <script src="https://unpkg.com/@rive-app/canvas@2.49.0"></script>
 </head>
 <body>
 
@@ -35,28 +35,6 @@
   <script>
     const canvas = document.getElementById("rive-canvas");
 
-    function getTargetDimensions() {
-      const params = new URLSearchParams(window.location.search);
-      const paramW = parseInt(params.get("w"), 10);
-      const paramH = parseInt(params.get("h"), 10);
-
-      // If w/h passed from Salesforce, use them; otherwise use full inner window
-      const w = (!isNaN(paramW) && paramW > 0) ? paramW : window.innerWidth;
-      const h = (!isNaN(paramH) && paramH > 0) ? paramH : window.innerHeight;
-      return { w, h };
-    }
-
-    function syncCanvasResolution() {
-      const { w, h } = getTargetDimensions();
-      const dpr = window.devicePixelRatio || 1;
-      
-      // Match the physical pixel buffer to display resolution (prevents pixelation)
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-    }
-
-    syncCanvasResolution();
-
     const r = new rive.Rive({
       src: "https://fabguis-web.github.io/rive-test/round.riv",
       canvas: canvas,
@@ -64,19 +42,16 @@
       autoplay: true,
       automaticallyHandleEvents: false,
       layout: new rive.Layout({
-        fit: rive.Fit.Contain, // Keeps artwork crisp within bounds
+        fit: rive.Fit.Contain,
         alignment: rive.Alignment.Center
       }),
       onLoad: () => {
-        syncCanvasResolution();
+        r.resizeDrawingSurfaceToCanvas();
       }
     });
 
     window.addEventListener("resize", () => {
-      syncCanvasResolution();
-      if (r) {
-        r.startRendering();
-      }
+      r.resizeDrawingSurfaceToCanvas();
     });
   </script>
 

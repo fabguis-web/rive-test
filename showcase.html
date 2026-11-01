@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Rive showcase</title>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #222; padding: 24px; box-sizing: border-box; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
+  .card { border: 1px solid rgba(0,0,0,.1); border-radius: 12px; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
+  .card.featured { grid-column: span 2; }
+  .stage { position: relative; width: 100%; aspect-ratio: 1 / 1; }
+  .featured .stage { aspect-ratio: 16 / 9; }
+  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .caption { padding: 12px 16px; font-size: 14px; line-height: 1.4; border-top: 1px solid rgba(0,0,0,.08); }
+  .caption strong { display: block; font-size: 15px; margin-bottom: 2px; }
+  .hero { overflow: hidden; min-height: min(100vh, 720px); max-height: 720px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding: 24px 0 48px; margin: -24px 0 0; }
+  .hero-stage { position: relative; width: min(360px, 72vw, 62vh); aspect-ratio: 1 / 1; }
+  .hero-stage canvas { position: absolute; left: 50%; top: 50%; width: 270%; height: 270%; transform: translate(-50%, -50%); display: block; touch-action: none; }
+  .hero-hint { margin: 20px 0 0; font-size: 14px; letter-spacing: .02em; color: rgba(0,0,0,.45); }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-stage"><canvas id="hero-canvas" aria-label="Round button"></canvas></div>
+  <p class="hero-hint">Hover &amp; click me</p>
+</section>
+<main class="grid" id="grid"></main>
+
+<script src="https://unpkg.com/@rive-app/webgl2@2.49.0"></script>
+<script>
+(function () {
+  var ITEMS = [
+    { src: "riv/carousel.riv",    artboard: "Banking-app carousel", sm: "State Machine",   title: "Banking-app carousel", text: "Interactive card carousel for a banking app." },
+    { src: "riv/aluminium.riv",   artboard: "Artboard",             sm: "State Machine 1", title: "Aluminium",      text: "Graphical fidelity: realistic brushed-metal button, rendered live." },
+    { src: "riv/cta-button.riv",  artboard: "CTA-button",           sm: "State Machine 1", title: "CTA button",     text: "Call-to-action with hover and click states." },
+    { src: "riv/button-nowak.riv",artboard: "Artboard",             sm: "State Machine 1", title: "Button Nowak",   text: "Button with hover and click feedback." },
+    { src: "riv/terms.riv",       artboard: "Artboard",             sm: "State Machine 1", title: "Terms",          text: "Terms form: checkbox, field and submit interactions." },
+    { src: "riv/cube.riv",        artboard: "Power-up",             sm: "State Machine 1", title: "Power-up cube",  text: "Looping power-up animation." },
+    { src: "riv/hatch-door.riv",  artboard: "Artboard",             sm: "State Machine 1", title: "Hatch door",     text: "Flip the switch to open and close the hatch." },
+    { src: "riv/float.riv",       artboard: "Artboard",             sm: "State Machine 1", title: "Float",          text: "Floating interactive motion." }
+  ];
+
+  var grid = document.getElementById("grid");
+  var entries = [];
+  window.riveShowcaseStatus = {};
+
+  ITEMS.forEach(function (item) {
+    var card = document.createElement("article");
+    card.className = "card" + (item.featured ? " featured" : "");
+    card.innerHTML = '<div class="stage"><canvas aria-label="' + item.title + '"></canvas></div>' +
+      '<div class="caption"><strong>' + item.title + '</strong>' + item.text + '</div>';
+    grid.appendChild(card);
+    entries.push({ item: item, canvas: card.querySelector("canvas"), rive: null, visible: false });
+  });
+
+  function start(e) {
+    if (e.rive) return;
+    e.rive = new rive.Rive({
+      src: e.item.src,
+      canvas: e.canvas,
+      artboard: e.item.artboard,
+      stateMachine: e.item.sm,
+      autoplay: true,
+      layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.Center }),
+      onLoad: function () {
+        e.rive.resizeDrawingSurfaceToCanvas();
+        if (!e.visible) e.rive.pause();
+        window.riveShowcaseStatus[e.item.src] = "loaded";
+        console.log("SHOWCASE_LOADED " + e.item.src);
+        try { console.log("SHOWCASE_INPUTS " + e.item.src + " " + JSON.stringify((e.rive.stateMachineInputs(e.item.sm) || []).map(function (i) { return i.name + ":" + i.type; }))); } catch (_) {}
+        postHeight();
+      },
+      onLoadError: function (err) {
+        window.riveShowcaseStatus[e.item.src] = "error";
+        console.log("SHOWCASE_ERROR " + e.item.src + " " + (err && err.data));
+      }
+    });
+  }
+
+  var hero = { item: { src: "round.riv", artboard: "Artboard", sm: "State Machine 1" }, canvas: document.getElementById("hero-canvas"), rive: null, visible: true };
+  start(hero);
+
+  var io = new IntersectionObserver(function (list) {
+    list.forEach(function (en) {
+      var e = entries.find(function (x) { return x.canvas === en.target; });
+      e.visible = en.isIntersecting;
+      if (en.isIntersecting) { if (!e.rive) start(e); else e.rive.play(); }
+      else if (e.rive) e.rive.pause();
+    });
+  }, { rootMargin: "200px 0px" });
+  entries.forEach(function (e) { io.observe(e.canvas); });
+
+  function postHeight() {
+    var h = Math.ceil(document.documentElement.scrollHeight);
+    try { window.parent.postMessage({ riveShowcaseHeight: h }, "*"); } catch (_) {}
+  }
+
+  var t;
+  window.addEventListener("resize", function () {
+    entries.concat([hero]).forEach(function (e) { if (e.rive) e.rive.resizeDrawingSurfaceToCanvas(); });
+    clearTimeout(t); t = setTimeout(postHeight, 100);
+  });
+  window.addEventListener("load", postHeight);
+  if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body);
+
+  window.addEventListener("pagehide", function () {
+    io.disconnect();
+    entries.concat([hero]).forEach(function (e) { if (e.rive) { e.rive.cleanup(); e.rive = null; } });
+  });
+})();
+</script>
+</body>
+</html>

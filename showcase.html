@@ -12,6 +12,7 @@
   .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 980px; margin: 0 auto; }
   .card { border: 1px solid rgba(0,0,0,.1); border-radius: 12px; overflow: hidden; background: transparent; display: flex; flex-direction: column; }
   .card.featured { grid-column: 1 / -1; }
+  .card.narrow { justify-self: center; width: 100%; max-width: 560px; }
   .stage { position: relative; width: 100%; aspect-ratio: 1 / 1; }
   .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .caption { padding: 12px 16px; font-size: 14px; line-height: 1.4; border-top: 1px solid rgba(0,0,0,.08); }
@@ -30,7 +31,7 @@
 </section>
 <main class="grid" id="grid"></main>
 
-<script src="https://unpkg.com/@rive-app/webgl2@2.49.0"></script>
+<script src="https://unpkg.com/@rive-app/canvas@2.49.0"></script>
 <script>
 (function () {
   // Layout rhythm: 2-up square rows alternate with full-width landscape rows.
@@ -41,12 +42,11 @@
     { src: "sonar.riv",       artboard: "Main",     sm: "State Machine 1", title: "Sonar", text: "Continuous sonar sweep, rendered in real time.", featured: true, ratio: 1000 / 525 },
     { src: "portals.riv",     artboard: "Artboard",  sm: "State Machine 1", title: "Portals", text: "Depth and layering: scenes opening into scenes." },
     { src: "button-nowak.riv",artboard: "Artboard", sm: "State Machine 1", title: "Button Nowak", text: "Button with hover and click feedback." },
-    { src: "hatch-door.riv",  artboard: "Artboard", sm: "State Machine 1", title: "Hatch door", text: "Flip the switch to open and close the hatch.", featured: true, ratio: 778 / 472 },
-    { src: "cube.riv",        artboard: "Power-up", sm: "State Machine 1", title: "Power-up cube", text: "Looping power-up animation." },
+    { src: "hatch-door.riv",  artboard: "Artboard", sm: "State Machine 1", title: "Hatch door", text: "Flip the switch to open and close the hatch.", featured: true, narrow: true, ratio: 778 / 472 },
     { src: "clickable-anywhere.riv", artboard: "Artboard", sm: "State Machine 1", title: "Clickable anywhere", text: "Follows your pointer; click anywhere in the tile." },
-    { src: "connect.riv",     artboard: "Base",     sm: "State Machine 1", title: "Connect", text: "Hover the centre to connect the pieces.", featured: true, ratio: 1200 / 500 },
     { src: "bookmark.riv",    artboard: "Artboard", sm: "State Machine 1", title: "Bookmark", text: "Micro-interaction: hover and click to save." },
-    { src: "breathcontrol.riv", artboard: "Color",  sm: "State Machine 1", title: "Breath control", text: "Calm, looping breathing guide." }
+    { src: "connect.riv",     artboard: "Base",     sm: "State Machine 1", title: "Connect", text: "Hover the centre to connect the pieces.", featured: true, ratio: 1200 / 500 },
+    { src: "breathcontrol.riv", artboard: "Color",  sm: "State Machine 1", title: "Breath control", text: "Calm, looping breathing guide.", featured: true, narrow: true }
   ];
 
   var DPR = Math.min(window.devicePixelRatio || 1, (navigator.hardwareConcurrency || 8) <= 4 ? 1 : 1.5);
@@ -56,17 +56,23 @@
 
   ITEMS.forEach(function (item) {
     var card = document.createElement("article");
-    card.className = "card" + (item.featured ? " featured" : "");
+    card.className = "card" + (item.featured ? " featured" : "") + (item.narrow ? " narrow" : "");
     card.innerHTML = '<div class="stage"' + (item.ratio ? ' style="aspect-ratio:' + item.ratio + '"' : '') + '><canvas aria-label="' + item.title + '"></canvas></div>' +
       '<div class="caption"><strong>' + item.title + '</strong>' + item.text + '</div>';
     grid.appendChild(card);
     entries.push({ item: item, canvas: card.querySelector("canvas"), rive: null, visible: false });
   });
 
+  var bufs = {};
+  function getBuf(src) { return bufs[src] || (bufs[src] = fetch(src).then(function (r) { return r.arrayBuffer(); })); }
   function start(e) {
-    if (e.rive) return;
+    if (e.rive || e.loading) return;
+    e.loading = true;
+    getBuf(e.item.src).then(function (buf) { create(e, buf); });
+  }
+  function create(e, buf) {
     e.rive = new rive.Rive({
-      src: e.item.src,
+      buffer: buf,
       canvas: e.canvas,
       artboard: e.item.artboard,
       stateMachine: e.item.sm,
@@ -100,15 +106,6 @@
   }, { rootMargin: "200px 0px" });
   entries.forEach(function (e) { io.observe(e.canvas); });
 
-  // Free GPU memory for tiles far off screen; they reload when scrolled back near.
-  var far = new IntersectionObserver(function (list) {
-    list.forEach(function (en) {
-      if (en.isIntersecting) return;
-      var e = entries.find(function (x) { return x.canvas === en.target; });
-      if (e && e.rive) { e.rive.cleanup(); e.rive = null; }
-    });
-  }, { rootMargin: "1500px 0px" });
-  entries.forEach(function (e) { far.observe(e.canvas); });
 
   // Hero: pause when scrolled away.
   new IntersectionObserver(function (l) { if (hero.rive) { l[0].isIntersecting ? hero.rive.play() : hero.rive.pause(); } }).observe(hero.canvas);

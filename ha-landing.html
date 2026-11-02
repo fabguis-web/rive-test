@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Prototype – Hans Anders landing with Rive showcase</title>
+<style>
+:root{--red:#E42313;--ink:#1a1a1a;--grey:#666;--line:#e6e6e6;--ph:#ececec}
+*{box-sizing:border-box}body{margin:0;font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:#fff}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+.proto{position:fixed;bottom:12px;left:12px;z-index:50;background:rgba(0,0,0,.7);color:#fff;font-size:11px;padding:4px 8px;border-radius:4px}
+.topbar{background:var(--red);color:#fff;font-size:13px;text-align:center;padding:8px 12px}
+.topbar b{text-decoration:underline}
+header.main{border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:20}
+.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:32px;height:72px}
+.icons{justify-self:end}
+main.wrap{padding-top:24px}
+.logo img{display:block;width:198px;height:auto}
+nav.primary{display:flex;gap:24px;font-size:15px;font-weight:600}
+nav.primary a:hover{color:var(--red)}
+.icons{display:flex;gap:14px;align-items:center;font-size:13px}
+.search{display:flex;align-items:center;gap:8px;border:1px solid #ccc;border-radius:20px;padding:7px 14px;color:var(--grey);min-width:180px}
+.btn{display:inline-block;white-space:nowrap;background:var(--red);color:#fff;font-weight:700;border-radius:24px;padding:10px 20px;font-size:14px}
+.btn.ghost{background:#fff;color:var(--red);border:2px solid var(--red)}
+.burger{display:none}.lhs{display:flex;align-items:center;gap:12px}
+svg.i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.ph{background:var(--ph);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-size:13px}
+.hero-ph{height:360px;margin:24px 0}
+.usps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:0 0 32px}.usps .ph{height:56px}
+#rive-showcase{display:block;width:100%;height:6300px;border:0;overflow:hidden}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px 0}.cards .ph{height:220px}
+footer{margin-top:48px}
+.help{background:#f5f5f5;padding:40px 0}.help .wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.help h3{margin:0 0 8px;font-size:22px}.help p{color:var(--grey);margin:0 0 16px}
+.help ul{list-style:none;padding:0;margin:0 0 16px;color:var(--grey);font-size:14px}.help li:before{content:"✓ ";color:var(--red)}
+.nl{display:flex;gap:8px}.nl span{flex:1;border:1px solid #ccc;background:#fff;border-radius:24px;padding:10px 16px;color:#999;font-size:14px}
+.links{background:#fff;padding:40px 0;border-top:1px solid var(--line)}
+.cols{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.cols h4{margin:0 0 12px;font-size:15px}.cols a{display:block;color:var(--grey);font-size:14px;padding:3px 0}
+.legal{border-top:1px solid var(--line);padding:20px 0;font-size:12px;color:var(--grey)}
+.legal .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}.legal a{margin-right:16px}
+.pay span{display:inline-block;border:1px solid #ccc;border-radius:4px;padding:2px 6px;margin-left:6px}
+@media(max-width:1360px){.search{min-width:0;border:0;padding:0}.search .t{display:none}nav.primary{gap:18px}.hrow{gap:24px}}
+@media(max-width:1100px){nav.primary,.search,.icons .txt{display:none}.burger{display:block}.hrow{grid-template-columns:1fr auto}}
+@media(max-width:700px){.wrap{padding:0 16px}.hrow{height:60px;gap:12px}.logo img{width:150px}.hero-ph{height:220px}
+.usps{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.help .wrap,.cols{grid-template-columns:1fr 1fr}.help .wrap{grid-template-columns:1fr}.icons .btn{display:none}}
+.hrow{height:64px}
+nav.primary{font-weight:400!important;font-size:15px;color:#2f3b4c;gap:22px!important}
+.icons{gap:30px!important;color:#111}
+.lang{display:flex;align-items:center;gap:6px;font-size:13px;color:#2f3b4c}
+.lang .on{width:30px;height:30px;border:1px solid #d9d9d9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:#111}
+.cart{display:flex;align-items:center;gap:4px}.cart b{background:var(--red);color:#fff;font-size:11px;border-radius:10px;padding:1px 7px;line-height:16px}
+svg.i{stroke-width:2;width:24px;height:24px}
+@media(max-width:1100px){.icons .lang{display:none}.icons{gap:18px!important}}@media(max-width:700px){.icons{gap:12px!important}.lhs{gap:8px}}
+</style>
+</head>
+<body>
+<div class="proto">Prototype, not the live site</div>
+<header class="main"><div class="wrap hrow">
+  <div class="lhs"><svg class="i burger" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+  <a class="logo" href="#"><img src="assets/ha-logo.svg" alt="Hans Anders"></a></div>
+  <nav class="primary"><a href="#">Brillen</a><a href="#">Zonnebrillen</a><a href="#">Sportbrillen</a><a href="#">Lenzen</a><a href="#">Hoorzorg</a><a href="#">FAQ</a><a href="#">Acties</a></nav>
+  <div class="icons">
+    <div class="lang"><span>FR</span><span class="on">NL</span></div>
+    <svg class="i" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/></svg>
+    <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4 3.8-6 7.5-6s6.7 2 7.5 6"/></svg>
+    <svg class="i" viewBox="0 0 24 24"><path d="M12 20s-8-4.9-8-10.5A4.5 4.5 0 0112 6.6a4.5 4.5 0 018 2.9C20 15.1 12 20 12 20z"/></svg>
+    <span class="cart"><svg class="i" viewBox="0 0 24 24"><path d="M4.5 9h15l-1.2 11H5.7z"/><path d="M8.5 9V7a3.5 3.5 0 017 0v2"/></svg><b>0</b></span>
+  </div>
+</div></header>
+<main class="wrap">
+  <iframe id="rive-showcase" src="showcase.html" title="Rive showcase" scrolling="no"></iframe>
+</main>
+<footer>
+  <div class="help"><div class="wrap">
+    <div><h3>We helpen je graag!</h3><p>Maak heel eenvoudig een afspraak bij één van onze winkels bij jou in de buurt!</p><a class="btn" href="#">Afspraak maken</a> <a class="btn ghost" href="#">Vind een winkel</a></div>
+    <div><h3>Blijf up-to-date</h3><ul><li>Hoor als eerste van onze aanbiedingen</li><li>Ontdek de nieuwste modellen en collecties</li><li>Unieke aanbiedingen speciaal voor jou!</li></ul><div class="nl"><span>E-mailadres</span><a class="btn" href="#">Subscribe</a></div></div>
+  </div></div>
+  <div class="links"><div class="wrap cols">
+    <div><h4>Assortiment</h4><a href="#">Brillen</a><a href="#">Zonnebrillen</a><a href="#">Lenzen</a><a href="#">Hoortoestellen</a><a href="#">Gehoorbescherming</a></div>
+    <div><h4>Advies</h4><a href="#">Horen</a><a href="#">Zien</a><a href="#">Brillen</a><a href="#">Lenzen</a><a href="#">Zonnebrillen</a></div>
+    <div><h4>Informatie</h4><a href="#">Veelgestelde vragen</a><a href="#">Klantendienst</a><a href="#">Acties</a><a href="#">Winkels</a></div>
+    <div><h4>Over Hans Anders</h4><a href="#">Werken bij</a><a href="#">Nieuws</a><a href="#">Zakelijk</a><a href="#">Sponsoring</a><a href="#">Corporate governance</a></div>
+  </div></div>
+  <div class="legal"><div class="wrap"><div><a href="#">Terms &amp; Conditions</a><a href="#">Disclaimer</a><a href="#">Privacy Policy</a><a href="#">Cookies</a></div><div class="pay">Betaal met<span>Visa</span><span>Mastercard</span><span>Bancontact</span></div></div></div>
+</footer>
+<script>
+(function(){var f=document.getElementById("rive-showcase");
+window.addEventListener("message",function(e){if(e.origin!==location.origin)return;var h=e.data&&e.data.riveShowcaseHeight;if(typeof h==="number"&&h>0&&h<20000)f.style.height=Math.ceil(h)+"px";});})();
+</script>
+</body>
+</html>
